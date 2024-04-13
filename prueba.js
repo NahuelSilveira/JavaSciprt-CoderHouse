@@ -61,7 +61,6 @@ while (repetir) {
             alert("Has terminado el cuestionario. Obtuviste " + puntos + " puntos de 5 posibles");
         }
 
-
         mostrarTrivia();
 
         repetir = confirm("Queres repetir la trivia?");
@@ -70,7 +69,6 @@ while (repetir) {
         repetir = false;
     }
 }
-
 
 alert("Gracias por jugar. Nos vemos");
 
