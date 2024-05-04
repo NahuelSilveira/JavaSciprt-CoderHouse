@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style/style.css" />
+    <title>Trivia de Los Simpson</title>
+    <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
+
     <div class="cortina-izq cortina">
         <img src="assets/izq.png" alt="" class="">
     </div>
@@ -60,6 +61,21 @@
         <img src="assets/der.png" alt="" />
       </div>
 
+    <div class="container">
+        <h1 id="triviaTitle">Trivia de Los Simpson</h1>
+        <input type="text" id="nombreInput" placeholder="Ingresa tu nombre" class="center-input">
+        <div class="btn-container">
+            <button id="btnEmpezarTrivia" class="btn-jugar">Empezar Trivia</button>
+            <button id="btnTablaPuntos" class="btn-jugar2">Tabla de Puntos</button>
+            <button id="btnVolver" class="btn-jugar3" style="display:none;">Volver</button>
+            <button id="btnContinuar" class="btn-jugar4" style="display:none;">Continuar</button>
+        </div>
+        <div id="triviaBox" class="triviaBox"></div>
+    </div>
+    <div id="overlay" class="overlay">
+        <div id="overlay-content" class="overlay-content">
+        </div>
+    </div>
     <script src="./prueba.js"></script>
 </body>
 </html>
