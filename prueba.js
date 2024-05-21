@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const preguntas = [
         {
-            pregunta: "Donde trabaja Homero?",
-            opciones: ["Krusty Burger", "Central Nuclear", "El chino de la vuelta", "La tienda de comics"],
-            respuestaCorrecta: "Central Nuclear"
+            pregunta: "¿Cómo se llama el primer episodio de Los Simpson?",
+            opciones: ["Simpsons Roasting on an Open Fire", "Bart the Genius", "Homer's Odyssey", "There's No Disgrace Like Home"],
+            respuestaCorrecta: "Simpsons Roasting on an Open Fire"
         },
         {
             pregunta: "Cual es el nombre del bar que siempre va Homero?",
@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
             mostrarPregunta();
         } else {
             if (!mensajeMostrado) {
-                showMessage('Por favor, ingresa tu nombre.');
-                mensajeMostrado = true; // Marcar que el mensaje se ha mostrado
+                Swal.fire('Por favor, ingresa tu nombre.');
+                
             }
             triviaBox.removeChild(btnContinuar); // Eliminar el botón "Continuar" si está presente
         }
@@ -60,21 +60,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function showMessage(message) {
-        const mensajeElemento = document.createElement('div');
-        mensajeElemento.textContent = message;
-        triviaBox.appendChild(mensajeElemento);
-
-        btnContinuar.textContent = 'Continuar';
-        btnContinuar.addEventListener('click', function () {
-            triviaBox.removeChild(mensajeElemento);
-            triviaBox.removeChild(btnContinuar);
+        Swal.fire({
+            text: message,
+            icon: 'info',
+            confirmButtonText: 'Continuar'
+        }).then(() => {
             if (preguntaActual < preguntas.length) {
                 mostrarPregunta();
             } else {
                 terminarTrivia();
             }
         });
-        triviaBox.appendChild(btnContinuar);
     }
 
     function mostrarPregunta() {
@@ -85,35 +81,60 @@ document.addEventListener('DOMContentLoaded', function () {
         respuestaSeleccionada = false; // Restablece la capacidad de seleccionar respuestas
         const preguntaActualObj = preguntas[preguntaActual];
 
-        const preguntaElemento = document.createElement('h3');
-        preguntaElemento.textContent = preguntaActualObj.pregunta;
-        triviaBox.appendChild(preguntaElemento);
+        // Obtener datos del primer episodio de Los Simpson desde la API
+        fetch('https://api.sampleapis.com/simpsons/episodes/1')
+            .then(response => response.json())
+            .then(data => {
+                const preguntaElemento = document.createElement('h3');
+                preguntaElemento.textContent = preguntas[preguntaActual].pregunta;
+                triviaBox.appendChild(preguntaElemento);
 
-        preguntaActualObj.opciones.forEach((opcion, index) => {
-            const opcionElemento = document.createElement('button');
-            opcionElemento.textContent = opcion;
-            opcionElemento.addEventListener('click', function () {
-                if (!respuestaSeleccionada) {
-                    verificarRespuesta(opcion);
-                    respuestaSeleccionada = true; // Marca que se seleccionó una respuesta
-                }
-            });
-            triviaBox.appendChild(opcionElemento);
-        });
+                preguntas[preguntaActual].opciones.forEach((opcion, index) => {
+                    const opcionElemento = document.createElement('button');
+                    opcionElemento.textContent = opcion;
+                    opcionElemento.addEventListener('click', function () {
+                        if (!respuestaSeleccionada) {
+                            verificarRespuesta(opcion, data.name); // Comparar respuesta con nombre del episodio obtenido de la API
+                            respuestaSeleccionada = true; // Marca que se seleccionó una respuesta
+                        }
+                    });
+                    triviaBox.appendChild(opcionElemento);
+                });
+            })
+            .catch(error => console.error('Error al obtener datos del episodio:', error));
     }
 
     function verificarRespuesta(respuesta) {
         const preguntaActualObj = preguntas[preguntaActual];
         if (respuesta === preguntaActualObj.respuestaCorrecta) {
-            puntos++;
-            showMessage('¡Respuesta correcta!');
+            Swal.fire({
+                text: '¡Respuesta correcta!',
+                icon: 'success',
+                confirmButtonText: 'Continuar'
+            }).then(() => {
+                puntos++;
+                preguntaActual++;
+                if (preguntaActual < preguntas.length) {
+                    mostrarPregunta();
+                } else {
+                    terminarTrivia();
+                }
+            });
         } else {
-            showMessage('Respuesta incorrecta. La respuesta correcta es: ' + preguntaActualObj.respuestaCorrecta);
+            Swal.fire({
+                text: 'Respuesta incorrecta. La respuesta correcta es: ' + preguntaActualObj.respuestaCorrecta,
+                icon: 'error',
+                confirmButtonText: 'Continuar'
+            }).then(() => {
+                preguntaActual++;
+                if (preguntaActual < preguntas.length) {
+                    mostrarPregunta();
+                } else {
+                    terminarTrivia();
+                }
+            });
         }
-
-        preguntaActual++;
     }
-
     function terminarTrivia() {
         overlay.style.display = 'flex';
         triviaBox.innerHTML = '<h2>Has terminado la trivia. Obtuviste ' + puntos + ' puntos de 5 posibles.</h2>';
